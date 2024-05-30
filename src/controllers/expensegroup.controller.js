@@ -199,14 +199,13 @@ const createExpenseGroup = asyncHandler(async (req, res) => {
   //Name and Participants is already checked in validator no need to check here
   const members = [...new Set([...participants, req.user._id.toString()])]; //Prevents duplications
 
-  isValidUser(members).then((isValid) => {
-    if (!isValid) {
-      throw new ApiError(
-        404,
-        "Invalid participant Id,Particiapant does not exist"
-      );
-    }
-  });
+  const isValid = await isValidUser(members);
+  if (!isValid) {
+    throw new ApiError(
+      400,
+      "Invalid participant Id, Participant does not exist"
+    );
+  }
   let splitJson = {}; // Initializing the split of the group
   for (let user of members) {
     splitJson[user] = 0;
