@@ -6,6 +6,7 @@ import { ExpenseGroup } from "../models/expensegroup.model.js";
 import { addSplit, clearSplit } from "./expensegroup.controller.js";
 import mongoose from "mongoose";
 import { getLocalPath, getStaticFilePath } from "../helpers/constants.js";
+import { User } from "../models/user.model.js";
 const commonExpenseAggregations = () => {
   return [
     {
