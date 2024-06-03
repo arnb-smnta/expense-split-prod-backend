@@ -20,15 +20,22 @@ const io = new Server(httpServer, {
 
 app.set("io", io);
 
-app.use(
-  cors({
-    origin:
-      process.env.CORS_ORIGIN === "*"
-        ? "*"
-        : process.env.CORS_ORIGIN?.split(","),
-    credentials: true,
-  })
-);
+const allowedOrigins =
+  process.env.CORS_ORIGIN === "*" ? "*" : process.env.CORS_ORIGIN.split(",");
+
+const corsOptionsDelegate = (req, callback) => {
+  let corsOptions;
+  if (allowedOrigins === "*") {
+    corsOptions = { origin: "*", credentials: true };
+  } else if (allowedOrigins.includes(req.header("Origin"))) {
+    corsOptions = { origin: req.header("Origin"), credentials: true }; // reflect (enable) the requested origin in the CORS response
+  } else {
+    corsOptions = { origin: false }; // disable CORS for this request
+  }
+  callback(null, corsOptions); // callback expects two parameters: error and options
+};
+
+app.use(cors(corsOptionsDelegate));
 
 app.use(requestIp.mw());
 // Rate limiter to avoid misuse of the service and avoid cost spikes

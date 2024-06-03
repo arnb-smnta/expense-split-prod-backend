@@ -71,3 +71,7 @@ router
   .get(mongoIdPathVariableValidator("groupId"), validate, groupCategoryExpense);
 
 export default router;
+
+//!TODO Routes and functionality
+//Edit expense bill photos
+//Unequal expense sharing
