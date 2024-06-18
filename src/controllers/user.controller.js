@@ -155,4 +155,83 @@ const logoutUser = asyncHandler(async (req, res) => {
     .json(new ApiResponse(200, {}, "User logged out"));
 });
 
-export { registerUser, loginUser, logoutUser };
+const changePassword = asyncHandler(async (req, res) => {
+  const { oldpassword, newpassword, confrimpassword } = req.body;
+
+  if (!oldpassword.trim() || !newpassword.trim() || !confrimpassword.trim()) {
+    throw new ApiError(400, "All the fields are required");
+  }
+
+  const user = await User.findById(req.user._id);
+  if (newpassword.trim() !== confrimpassword.trim()) {
+    throw new ApiError(400, "newPassword and confirm password does not match");
+  }
+
+  const isPasswordCorrect = user.isPasswordCorrect(oldpassword);
+  if (!isPasswordCorrect) {
+    throw new ApiError(401, "Wrong Password entered");
+  }
+
+  user.password = newpassword;
+  user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "Password updated succesfully"));
+});
+
+const updateUserDetails = asyncHandler(async (req, res) => {
+  const { username, email } = req.body;
+  if (!username && !email) {
+    throw new ApiError(400, "Enter the field to change");
+  }
+
+  if (username) {
+    const existinguserwithusername = await User.findOne({ username });
+
+    if (
+      existinguserwithusername &&
+      existinguserwithusername._id.toString() !== req.user._id.toString()
+    ) {
+      throw new ApiError(409, "Username is already taken");
+    }
+  }
+
+  if (email) {
+    const existinguserwithemail = await User.findOne({ email });
+    if (
+      existinguserwithemail &&
+      existinguserwithemail._id.toString() !== req.user._id.toString()
+    ) {
+      throw new ApiError(409, "Userwith same email already exists");
+    }
+  }
+
+  const user = await User.findById(req.user._id);
+  if (username) {
+    user.username = username;
+  }
+  if (email) {
+    user.email = email;
+  }
+  user.save({ validateBeforeSave: false });
+
+  return res
+    .status(200)
+    .json(new ApiResponse(200, {}, "USer updated succesfully"));
+});
+
+const getCurrentUser = asyncHandler(async (req, res) => {
+  return res
+    .status(200)
+    .json(new ApiResponse(200, req.user, "Current user fetched Succesfully"));
+});
+
+export {
+  registerUser,
+  loginUser,
+  logoutUser,
+  changePassword,
+  updateUserDetails,
+  getCurrentUser,
+};
