@@ -10,6 +10,7 @@ import { rateLimit } from "express-rate-limit";
 import userRouter from "./routes/user.routes.js";
 import expenseGroupRouter from "./routes/expensegroup.routes.js";
 import expenseRouter from "./routes/expense.routes.js";
+import { errorHandler } from "./middleware/error.middleware.js";
 const io = new Server(httpServer, {
   pingTimeout: 60000,
   cors: {
@@ -60,4 +61,5 @@ app.use("/api/v1/users", userRouter);
 //* expense Split-app api's
 app.use("/api/v1/expensegroup", expenseGroupRouter);
 app.use("/api/v1/expense", expenseRouter);
+app.use(errorHandler);
 export { httpServer };
