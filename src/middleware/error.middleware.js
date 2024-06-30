@@ -1,3 +1,4 @@
+import mongoose from "mongoose";
 import { ApiError } from "../helpers/ApiError.js";
 import { removeUnusedMulterImageFilesOnError } from "../helpers/constants.js";
 import logger from "./winston.logger.js";
