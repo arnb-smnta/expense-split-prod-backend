@@ -2,47 +2,49 @@
 <h1>server.splitbills.site</h1>
 
 ### Expense Routes
+## Route Url- server.splitbills.site/api/v1/expense
 
 | Method | Route                                     |
 |--------|-------------------------------------------|
-| POST   | `/addexpense/:groupId`                    |
-| GET    | `/:expenseId`                             |
-| PATCH  | `/:expenseId`                             |
-| DELETE | `/:expenseId`                             |
-| GET    | `/group/:groupId`                         |
-| GET    | `/user/expense`                           |
-| GET    | `/user/recentexpense`                     |
-| GET    | `/monthlyexpense/user`                    |
-| GET    | `/categoryexpense/user`                   |
-| GET    | `/dailyexpense/user`                      |
-| GET    | `/monthlyexpense/group/:groupId`          |
-| GET    | `/dailyexpense/group/:groupId`            |
-| GET    | `/categoryexpense/group/:groupId`         |
+| POST   | `/addexpense/:groupId`  Adds expense in a group                  |
+| GET    | `/:expenseId`  Get details of Expense
+| PATCH  | `/:expenseId`  Edit expense details       |
+| DELETE | `/:expenseId`  Delete expense                           |
+| GET    | `/group/:groupId`     Views all expense of the group                    |
+| GET    | `/user/expense`       Views all the expense of the user                    |
+| GET    | `/user/recentexpense`  Gets recent 5 expenses of the group                   |
+| GET    | `/monthlyexpense/user`  Gets users expenses month wise                  |
+| GET    | `/categoryexpense/user`  Gets users expense category wise                 |
+| GET    | `/dailyexpense/user`     Gets users expense daily wise                 |
+| GET    | `/monthlyexpense/group/:groupId` Gets users expense monthly wise         |
+| GET    | `/dailyexpense/group/:groupId`   Gets expense in a group daily wise         |
+| GET    | `/categoryexpense/group/:groupId` Gets expenses of a group category wise         |
 
 ### Expense Group Routes
-
+## Route Url-server.splitbills.site/api/v1/expensegroup
 | Method | Route                                     |
 |--------|-------------------------------------------|
-| GET    | `/availableUsers`                         |
-| POST   | `/creategroup`                            |
-| GET    | `/:groupId`                               |
-| PATCH  | `/:groupId`                               |
-| DELETE | `/:groupId`                               |
-| POST   | `/group-settlements/:groupId`             |
-| POST   | `/makesettlement/:groupId`                |
-| GET    | `/`                                       |
-| GET    | `/settlements/user`                       |
-| GET    | `/settlements/group/:groupId`             |
-| POST   | `/group/:groupId/:userId`                 |
+| GET    | `/availableUsers`  Provides list of all available user in the db                       |
+| POST   | `/creategroup`     Creates a new group                       |
+| GET    | `/:groupId`        Get details of a group                        |
+| PATCH  | `/:groupId`        Edit details of a group only name and description                      |
+| DELETE | `/:groupId`        Delete Group Details                       |
+| POST   | `/group-settlements/:groupId` Gets group balance sheet who owes whom how much in simplified form            |
+| POST   | `/makesettlement/:groupId`    Settles users balances based on the data provided above            |
+| GET    | `/`                           Gets list of all the groups user is a part of             |
+| GET    | `/settlements/user`           Gets all the settlements done by the user            |
+| GET    | `/settlements/group/:groupId` Gets all the settlements happend in the group            |
+| POST   | `/group/:groupId/:userId`      Add members in expense group           |
 
 ### User Routes
+## Route Url- server.splitbills.site/api/v1/users
 
 | Method | Route                                     |
 |--------|-------------------------------------------|
-| POST   | `/register`                               |
-| POST   | `/login`                                  |
-| POST   | `/logout`                                 |
-| GET    | `/availableusers`                         |
-| POST   | `/changepassword`                         |
-| GET    | `/getcurrentuser`                         |
-| POST   | `/changeuserdetails`                      |
+| POST   | `/register`      Register new user                         |
+| POST   | `/login`         Logins new user                         |
+| POST   | `/logout`        Logs out new user                         |
+| GET    | `/availableusers` gets list of all available user in the db                        |
+| POST   | `/changepassword` Changes password of the user                         |
+| GET    | `/getcurrentuser`  Get details of the logged in user                       |
+| POST   | `/changeuserdetails`  Change details of the logged in user                    |
