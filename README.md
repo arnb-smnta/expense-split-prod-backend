@@ -2,7 +2,7 @@
 <h1>server.splitbills.site</h1>
 
 ### Expense Routes
-## Route Url- server.splitbills.site/api/v1/expense
+## Route Url- server.splitbills.site/api/v1/expense {protected routes}
 
 | Method | Route                                     |
 |--------|-------------------------------------------|
@@ -21,7 +21,7 @@
 | GET    | `/categoryexpense/group/:groupId` Gets expenses of a group category wise         |
 
 ### Expense Group Routes
-## Route Url-server.splitbills.site/api/v1/expensegroup
+## Route Url-server.splitbills.site/api/v1/expensegroup {protected routes}
 | Method | Route                                     |
 |--------|-------------------------------------------|
 | GET    | `/availableUsers`  Provides list of all available user in the db                       |
@@ -44,7 +44,11 @@
 | POST   | `/register`      Register new user                         |
 | POST   | `/login`         Logins new user                         |
 | POST   | `/logout`        Logs out new user                         |
-| GET    | `/availableusers` gets list of all available user in the db                        |
-| POST   | `/changepassword` Changes password of the user                         |
-| GET    | `/getcurrentuser`  Get details of the logged in user                       |
-| POST   | `/changeuserdetails`  Change details of the logged in user                    |
+| GET    | `/availableusers` gets list of all available user in the db {protected routes}                        |
+| POST   | `/changepassword` Changes password of the user {protected routes}                         |
+| GET    | `/getcurrentuser`  Get details of the logged in user   {protected routes}                    |
+| POST   | `/changeuserdetails`  Change details of the logged in user   {protected routes}                 |
+
+
+
+### {protected routes}- This are routes that you need to login to access on login you will provided with a jwt access token which will be verified each time you try to access a protected route or it will throw a '401'- unauthorised error.
