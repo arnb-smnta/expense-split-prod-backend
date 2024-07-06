@@ -294,49 +294,7 @@ const getUserExpenseGroups = asyncHandler(async (req, res) => {
     .status(200)
     .json(new ApiResponse(200, { groups }, "User groups fetched succesfully"));
 });
-const groupBalaceSheet = asyncHandler(async (req, res) => {
-  const { groupId } = req.params;
 
-  const expenseGroup = await ExpenseGroup.findById(groupId);
-
-  if (!expenseGroup) {
-    throw new ApiError(404, "Group not found, Invalid group ID");
-  }
-
-  if (!expenseGroup.participants.includes(req.user._id.toString())) {
-    throw new ApiError(403, "You are not participant of this group");
-  }
-
-  const balanceData = groupBalanceCalculator(expenseGroup.split);
-
-  const agrregatedData = balanceData.map(async (data) => {
-    let array = [];
-    for (let i = 0; i <= 1; i++) {
-      const user = await User.findById(data[i]).select(
-        " -password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
-      );
-      if (i === 0) {
-        array.push({ settleFrom: user });
-      } else {
-        array.push({ settleTo: user });
-      }
-    }
-
-    array.push({ value: data[2] });
-
-    return array;
-  });
-
-  const payload = await Promise.all(agrregatedData);
-
-  return res
-    .status(200)
-    .json(
-      new ApiResponse(200, { payload }, "Group balance fetched succesfully")
-    );
-
-  //This will return all the balances accumulated in a group who owes whom and how much by analyzing the group split and expenses
-});
 const makeSettlement = asyncHandler(async (req, res) => {
   const { groupId } = req.params;
 
@@ -660,8 +618,171 @@ export const clearSplit = async (groupId, Amount, Owner, participants) => {
   await group.save();
 };
 
+/*const groupBalaceSheet = asyncHandler(async (req, res) => {
+  const { groupId } = req.params;
+
+  const expenseGroup = await ExpenseGroup.findById(groupId);
+
+  if (!expenseGroup) {
+    throw new ApiError(404, "Group not found, Invalid group ID");
+  }
+
+  if (!expenseGroup.participants.includes(req.user._id.toString())) {
+    throw new ApiError(403, "You are not participant of this group");
+  }
+
+  const balanceData = groupBalanceCalculator(expenseGroup.split);
+
+  const agrregatedData = balanceData.map(async (data) => {
+    let array = [];
+    for (let i = 0; i <= 1; i++) {
+      const user = await User.findById(data[i]).select(
+        " -password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
+      );
+      if (i === 0) {
+        array.push({ settleFrom: user });
+      } else {
+        array.push({ settleTo: user });
+      }
+    }
+
+    array.push({ value: data[2] });
+
+    return array;
+  });
+
+  const payload = await Promise.all(agrregatedData);
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(200, { payload }, "Group balance fetched succesfully")
+    );
+
+  //This will return all the balances accumulated in a group who owes whom and how much by analyzing the group split and expenses
+});*/
+
+const groupBalaceSheet = asyncHandler(async (req, res) => {
+  const { groupId } = req.params;
+
+  const expenseGroup = await ExpenseGroup.findById(groupId);
+
+  if (!expenseGroup) {
+    throw new ApiError(404, "Group not found, Invalid group ID");
+  }
+
+  if (!expenseGroup.participants.includes(req.user._id.toString())) {
+    throw new ApiError(403, "You are not participant of this group");
+  }
+
+  const balanceData = groupBalanceCalculator(expenseGroup.split);
+
+  // Fetch all user details in a single call
+  const userIds = new Set();
+  balanceData.forEach((data) => {
+    userIds.add(data[0]);
+    userIds.add(data[1]);
+  });
+
+  const users = await User.find({ _id: { $in: Array.from(userIds) } }).select(
+    " -password -refreshToken -forgotPasswordToken -forgotPasswordExpiry -emailVerificationToken -emailVerificationExpiry"
+  );
+
+  const userMap = new Map(users.map((user) => [user._id.toString(), user]));
+
+  const aggregatedData = balanceData.map((data) => ({
+    settleFrom: userMap.get(data[0]),
+    settleTo: userMap.get(data[1]),
+    value: data[2],
+  }));
+
+  return res
+    .status(200)
+    .json(
+      new ApiResponse(
+        200,
+        { payload: aggregatedData },
+        "Group balance fetched successfully"
+      )
+    );
+});
+
 //Responsible for finding out group balances who owes whom and how much a aggregated balance of all the split in group
 const groupBalanceCalculator = (split) => {
+  const splits = [];
+  const transactionMap = new Map(split);
+
+  // Function to settle similar figures
+  function settleSimilarFigures() {
+    const vis = new Map();
+    for (let [transaction1, value1] of transactionMap.entries()) {
+      vis.set(transaction1, true);
+      for (let [transaction2, value2] of transactionMap.entries()) {
+        if (!vis.has(transaction2) && transaction1 !== transaction2) {
+          if (value2 === -value1) {
+            if (value2 > value1) {
+              splits.push([transaction1, transaction2, value2]);
+            } else {
+              splits.push([transaction2, transaction1, value1]);
+            }
+            transactionMap.set(transaction2, 0);
+            transactionMap.set(transaction1, 0);
+          }
+        }
+      }
+    }
+  }
+
+  // Helper function to find maximum and minimum values in the split
+  function getMaxMinCredit() {
+    let maxKey = null,
+      minKey = null;
+    let max = Number.MIN_VALUE;
+    let min = Number.MAX_VALUE;
+    for (let [key, value] of transactionMap.entries()) {
+      if (value < min && value !== 0) {
+        min = value;
+        minKey = key;
+      }
+      if (value > max && value !== 0) {
+        max = value;
+        maxKey = key;
+      }
+    }
+    return [minKey, maxKey];
+  }
+
+  // Iterative helper function to create settlement figures between uneven +ve and -ve values
+  function helper() {
+    while (true) {
+      const [minKey, maxKey] = getMaxMinCredit();
+      if (!minKey || !maxKey) {
+        break;
+      }
+
+      const minValue = Math.min(
+        -transactionMap.get(minKey),
+        transactionMap.get(maxKey)
+      );
+
+      // Update the transactionMap
+      transactionMap.set(minKey, transactionMap.get(minKey) + minValue);
+      transactionMap.set(maxKey, transactionMap.get(maxKey) - minValue);
+
+      // Add the settlement to splits
+      const roundedMinValue =
+        Math.round((minValue + Number.EPSILON) * 100) / 100;
+      splits.push([minKey, maxKey, roundedMinValue]);
+    }
+  }
+
+  settleSimilarFigures();
+  helper();
+
+  return splits;
+};
+
+/*const groupBalanceCalculator = (split) => {
   const splits = [];
   const transactionMap = split;
 
@@ -723,7 +844,186 @@ const groupBalanceCalculator = (split) => {
   settleSimilarFigures();
   helper();
   return splits;
+};*/
+
+/*const groupBalanceCalculator = (split) => {
+  const splits = [];
+  const transactionMap = new Map(split);
+
+  // Function to settle similar figures
+  function settleSimilarFigures() {
+    const vis = new Map();
+    for (let [transaction1, value1] of transactionMap.entries()) {
+      vis.set(transaction1, 1);
+      for (let [transaction2, value2] of transactionMap.entries()) {
+        if (!vis.has(transaction2) && transaction1 !== transaction2) {
+          if (value2 === -value1) {
+            if (value2 > value1) {
+              splits.push([transaction1, transaction2, value2]);
+            } else {
+              splits.push([transaction2, transaction1, value1]);
+            }
+            transactionMap.set(transaction2, 0);
+            transactionMap.set(transaction1, 0);
+          }
+        }
+      }
+    }
+  }
+
+  // Helper function to find maximum and minimum values in the split
+  function getMaxMinCredit() {
+    let maxKey, minKey;
+    let max = Number.MIN_VALUE;
+    let min = Number.MAX_VALUE;
+    for (let [key, value] of transactionMap.entries()) {
+      if (value < min) {
+        min = value;
+        minKey = key;
+      }
+      if (value > max) {
+        max = value;
+        maxKey = key;
+      }
+    }
+    return [minKey, maxKey];
+  }
+
+  // Function to create settlement figures between uneven +ve and -ve values
+  function helper() {
+    const [minKey, maxKey] = getMaxMinCredit();
+    if (!minKey || !maxKey) return;
+    const minValue = Math.min(
+      -transactionMap.get(minKey),
+      transactionMap.get(maxKey)
+    );
+
+    // Update the transactionMap
+    transactionMap.set(minKey, transactionMap.get(minKey) + minValue);
+    transactionMap.set(maxKey, transactionMap.get(maxKey) - minValue);
+
+    // Add the settlement to splits
+    const roundedMinValue = Math.round((minValue + Number.EPSILON) * 100) / 100;
+    splits.push([minKey, maxKey, roundedMinValue]);
+
+    // Check if there's no more debt or credit to settle
+    if (transactionMap.get(minKey) === 0 && transactionMap.get(maxKey) === 0)
+      return;
+
+    // Check for infinite recursion
+    if (splits.length > transactionMap.size * 2) {
+      console.error("Potential infinite loop detected");
+      return;
+    }
+
+    helper();
+  }
+
+  settleSimilarFigures();
+  helper();
+  return splits;
+};*/
+
+/*const groupBalanceCalculator = (split) => {
+  const splits = [];
+  const transactionMap = new Map(split);
+
+  // Function to settle similar figures
+  function settleSimilarFigures() {
+    const vis = new Map();
+    for (let [transaction1, value1] of transactionMap.entries()) {
+      vis.set(transaction1, true);
+      for (let [transaction2, value2] of transactionMap.entries()) {
+        if (!vis.has(transaction2) && transaction1 !== transaction2) {
+          if (value2 === -value1) {
+            if (value2 > value1) {
+              splits.push([transaction1, transaction2, value2]);
+            } else {
+              splits.push([transaction2, transaction1, value1]);
+            }
+            transactionMap.set(transaction2, 0);
+            transactionMap.set(transaction1, 0);
+          }
+        }
+      }
+    }
+  }
+
+  // Helper function to find maximum and minimum values in the split
+  function getMaxMinCredit() {
+    let maxKey = null,
+      minKey = null;
+    let max = Number.MIN_VALUE;
+    let min = Number.MAX_VALUE;
+    for (let [key, value] of transactionMap.entries()) {
+      if (value < min && value !== 0) {
+        min = value;
+        minKey = key;
+      }
+      if (value > max && value !== 0) {
+        max = value;
+        maxKey = key;
+      }
+    }
+    return [minKey, maxKey];
+  }
+
+  // Function to create settlement figures between uneven +ve and -ve values
+  function helper() {
+    const [minKey, maxKey] = getMaxMinCredit();
+    if (!minKey || !maxKey) {
+      console.log("No more transactions to settle.");
+      return;
+    }
+
+    const minValue = Math.min(
+      -transactionMap.get(minKey),
+      transactionMap.get(maxKey)
+    );
+
+    // Update the transactionMap
+    transactionMap.set(minKey, transactionMap.get(minKey) + minValue);
+    transactionMap.set(maxKey, transactionMap.get(maxKey) - minValue);
+
+    // Add the settlement to splits
+    const roundedMinValue = Math.round((minValue + Number.EPSILON) * 100) / 100;
+    splits.push([minKey, maxKey, roundedMinValue]);
+
+    // Debugging output
+    console.log(`Settled ${roundedMinValue} between ${minKey} and ${maxKey}`);
+    console.log(
+      "Current state of transactionMap:",
+      Array.from(transactionMap.entries())
+    );
+
+    // Avoid infinite recursion
+    if (splits.length > transactionMap.size * 2) {
+      throw new Error("Potential infinite loop detected");
+    }
+
+    helper();
+  }
+
+  settleSimilarFigures();
+  helper();
+
+  console.log("Final splits:", splits);
+  return splits;
 };
+
+// Mock data for testing
+const split = new Map([
+  ["user1", -30],
+  ["user2", 20],
+  ["user3", 10],
+]);
+
+try {
+  const result = groupBalanceCalculator(split);
+  console.log("Calculation result:", result);
+} catch (error) {
+  console.error("Error during calculation:", error);
+}*/
 
 export {
   createExpenseGroup,

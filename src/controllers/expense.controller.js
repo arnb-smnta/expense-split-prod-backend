@@ -358,7 +358,6 @@ const viewExpense = asyncHandler(async (req, res) => {
   const { expenseId } = req.params;
 
   const expense = await Expense.findById(expenseId);
-
   if (!expense) {
     throw new ApiError(404, "Expense not found, invalid expense Id");
   }
@@ -372,8 +371,7 @@ const viewExpense = asyncHandler(async (req, res) => {
   if (!group) {
     throw new ApiError(404, "Group to which this expense is does not exists");
   }
-
-  if (!group.participants.includes(req.user._id.toString())) {
+  if (!group[0].participants.includes(req.user._id.toString())) {
     throw new ApiError(
       403,
       "You are not participant of this group ,You cannot view this expense"
