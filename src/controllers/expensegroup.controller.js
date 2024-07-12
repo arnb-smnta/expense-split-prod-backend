@@ -384,12 +384,12 @@ const deleteExpenseGroup = asyncHandler(async (req, res) => {
 const editExpenseGroup = asyncHandler(async (req, res) => {
   const { groupId } = req.params;
   const group = await ExpenseGroup.findById(groupId);
-  const { name, description } = req.body;
+  const { name, description, groupCategory } = req.body;
   if (!group) {
     throw new ApiError(404, "Group not found, Invalid group Id");
   }
 
-  if (!name && !description) {
+  if (!name && !description && !groupCategory) {
     throw new ApiError(400, "Enter something that needs to be updated");
   }
 
@@ -404,7 +404,9 @@ const editExpenseGroup = asyncHandler(async (req, res) => {
   if (description) {
     group.description = description;
   }
-
+  if (groupCategory) {
+    group.groupCategory = groupCategory;
+  }
   await group.save();
 
   const updatedGroup = await ExpenseGroup.aggregate([
