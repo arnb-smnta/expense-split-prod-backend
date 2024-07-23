@@ -1,0 +1,36 @@
+openapi: 3.0.0
+info:
+  title: Split App
+  description: |
+    # Splitapp.site
+
+    The **SplitApp** project is an innovative 🚀 and community-driven 🔭 initiative aimed at providing developers with free and accessible bill splitting APIs for their frontend project.
+
+    The project focuses on delivering all the necessary APIs for making a bill splitting app, enabling developers to seamlessly integrate these APIs into their application.
+
+    Key highlights of the SplitBill project include:
+
+    1. **🧤 Accessibility:** The Splitbill project is committed to eliminating barriers by providing free access to its collection of APIs.  
+        Developers can leverage these APIs without any cost limitations, allowing them to experiment, learn, and build innovative frontends for bill splitting application.
+
+    2. **🔌 Simplified Integration:** The Splitbill project understands the challenges developers face when integrating APIs into their applications. To address this, the project provides clear documentation, code samples, and SDKs, simplifying the integration process and reducing development time and effort.
+
+    3. **🤝 Community-Driven Development:** The project fosters a vibrant and collaborative community of developers. Contributors are encouraged to share their knowledge, engage in discussions, and collaborate on API-related projects. This collective effort ensures the continuous improvement and reliability of the APIs offered by the Splitbill project.
+
+    4. **🎼 Learning and Skill Development:** The Splitbill project aims to empower developers by providing a platform for learning and skill development. Through access to various APIs and educational resources, developers can enhance their understanding of API integration, expand their knowledge, and showcase their expertise through building complete projects.
+        
+    Overall, the **Splitbill** project is a valuable resource for developers seeking accessible and diverse APIs for a bill splitting app.
+
+    By fostering a supportive community, the project empowers developers to learn, create, and innovate, ultimately contributing to the growth and advancement of the API integration landscape.
+
+    ## 🏁 Installation
+
+    Follow [these](https://github.com/arnb-smnta/expense-split-prod-backend) instructions for the installation and project setup.
+
+    ## 🐞 Reporting issues
+
+    If you find API issues or bugs when testing, please create an [issue](https://github.com/arnb-smnta/expense-split-prod-backend/issues/new) and assign it to a member of the development team.
+  version: 1.0.0
+  contact: {}
+servers:
+  - url: "http://localhost:8080/api/v1"
