@@ -1,5 +1,6 @@
 <h1>This is a hosted backend of expense Split app for web developers to use in their frontend projects</h1>
-<h1><a></a>server.splitbills.site</h1></a></h1>
+<h1>[Hosted URL](https://server.splitbills.site)</h1>
+
 
 ### Expense Routes
 ## Route Url- server.splitbills.site/api/v1/expense {protected routes}
