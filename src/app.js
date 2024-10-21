@@ -1,9 +1,4 @@
 import express from "express";
-import swaggerUi from "swagger-ui-express";
-import YAML from "yaml";
-import fs from "fs";
-import path from "path";
-import { fileURLToPath } from "url";
 import { createServer } from "http";
 import { Server } from "socket.io";
 import cookieParser from "cookie-parser";
@@ -16,11 +11,6 @@ import userRouter from "./routes/user.routes.js";
 import expenseGroupRouter from "./routes/expensegroup.routes.js";
 import expenseRouter from "./routes/expense.routes.js";
 import { errorHandler } from "./middleware/error.middleware.js";
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-
-const file = fs.readFileSync(path.resolve(__dirname, "./swagger.yaml"), "utf8");
-const swaggerDocument = YAML.parse(file);
 
 const io = new Server(httpServer, {
   pingTimeout: 60000,
@@ -73,16 +63,9 @@ app.use("/api/v1/users", userRouter);
 app.use("/api/v1/expensegroup", expenseGroupRouter);
 app.use("/api/v1/expense", expenseRouter);
 
-app.use(
-  "/",
-  swaggerUi.serve,
-  swaggerUi.setup(swaggerDocument, {
-    swaggerOptions: {
-      docExpansion: "none", // keep all the sections collapsed by default
-    },
-    customSiteTitle: "SplitBills.site Docs",
-  })
-);
+app.get("/", (req, res) => {
+  res.redirect(`${process.env.DOCUMENTATION_URL}`);
+});
 
 app.use(errorHandler);
 export { httpServer };

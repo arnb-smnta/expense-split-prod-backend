@@ -1,0 +1,5 @@
+{
+  "yaml.schemas": {
+    "openapi:v3": "file:///home/arnab/Desktop/code/PortfolioWebsites/expense-split-app/backend/expense-split-prod-backend/src/swagger.yaml"
+  }
+}
