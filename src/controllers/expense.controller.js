@@ -263,9 +263,8 @@ const editExpense = asyncHandler(async (req, res) => {
   }
   if (participants) {
     const members = [...new Set([...participants])]; //Checking for duplicate id's and removing them if present
-
     const invalidParticipants = members.filter(
-      (participant) => !group.participants.includes(participant)
+      (participant) => !group[0].participants.includes(participant)
     );
 
     if (invalidParticipants.length > 0) {
@@ -281,7 +280,7 @@ const editExpense = asyncHandler(async (req, res) => {
     oldExpense.expenseMethod = expenseMethod;
   }
   if (owner) {
-    if (!group.participants.includes(owner)) {
+    if (!group[0].participants.includes(owner._id)) {
       throw new ApiError(400, "Owner must be part of the group");
     }
     oldExpense.owner = owner;
