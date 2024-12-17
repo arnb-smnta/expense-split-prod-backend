@@ -1,55 +1,96 @@
-<h1>This is a hosted backend of expense Split app for web developers to use in their frontend projects</h1>
-<h1>[Hosted URL](https://server.splitbills.site)</h1>
+Here is a polished and professional version for your README file:
 
+---
 
-### Expense Routes
-## Route Url- server.splitbills.site/api/v1/expense {protected routes}
+# 💼 **Expense Split Backend API**  
+This is a fully hosted backend for the **Expense Split** application, designed for web developers to seamlessly integrate into their frontend projects.  
 
-| Method | Route                                     |
-|--------|-------------------------------------------|
-| POST   | `/addexpense/:groupId`  Adds expense in a group                  |
-| GET    | `/:expenseId`  Get details of Expense
-| PATCH  | `/:expenseId`  Edit expense details       |
-| DELETE | `/:expenseId`  Delete expense                           |
-| GET    | `/group/:groupId`     Views all expense of the group                    |
-| GET    | `/user/expense`       Views all the expense of the user                    |
-| GET    | `/user/recentexpense`  Gets recent 5 expenses of the group                   |
-| GET    | `/monthlyexpense/user`  Gets users expenses month wise                  |
-| GET    | `/categoryexpense/user`  Gets users expense category wise                 |
-| GET    | `/dailyexpense/user`     Gets users expense daily wise                 |
-| GET    | `/monthlyexpense/group/:groupId` Gets users expense monthly wise         |
-| GET    | `/dailyexpense/group/:groupId`   Gets expense in a group daily wise         |
-| GET    | `/categoryexpense/group/:groupId` Gets expenses of a group category wise         |
+### 🌐 **Hosted URL**  
+[**https://server.splitbills.site**](https://server.splitbills.site)  
 
-### Expense Group Routes
-## Route Url-server.splitbills.site/api/v1/expensegroup {protected routes}
-| Method | Route                                     |
-|--------|-------------------------------------------|
-| GET    | `/availableUsers`  Provides list of all available user in the db                       |
-| POST   | `/creategroup`     Creates a new group                       |
-| GET    | `/:groupId`        Get details of a group                        |
-| PATCH  | `/:groupId`        Edit details of a group only name and description                      |
-| DELETE | `/:groupId`        Delete Group Details                       |
-| POST   | `/group-settlements/:groupId` Gets group balance sheet who owes whom how much in simplified form            |
-| POST   | `/makesettlement/:groupId`    Settles users balances based on the data provided above            |
-| GET    | `/`                           Gets list of all the groups user is a part of             |
-| GET    | `/settlements/user`           Gets all the settlements done by the user            |
-| GET    | `/settlements/group/:groupId` Gets all the settlements happend in the group            |
-| POST   | `/group/:groupId/:userId`      Add members in expense group           |
+---
 
-### User Routes
-## Route Url- server.splitbills.site/api/v1/users
+## 🚀 **Expense Routes**  
+**Base URL**: `https://server.splitbills.site/api/v1/expense` (Protected Routes - Requires JWT Authentication)  
 
-| Method | Route                                     |
-|--------|-------------------------------------------|
-| POST   | `/register`      Register new user                         |
-| POST   | `/login`         Logins new user                         |
-| POST   | `/logout`        Logs out new user                         |
-| GET    | `/availableusers` gets list of all available user in the db {protected routes}                        |
-| POST   | `/changepassword` Changes password of the user {protected routes}                         |
-| GET    | `/getcurrentuser`  Get details of the logged in user   {protected routes}                    |
-| POST   | `/changeuserdetails`  Change details of the logged in user   {protected routes}                 |
+| **Method** | **Route**                                 | **Description**                                          |
+|------------|-------------------------------------------|----------------------------------------------------------|
+| `POST`     | `/addexpense/:groupId`                   | Add an expense to a specific group.                     |
+| `GET`      | `/:expenseId`                            | Retrieve details of a specific expense.                 |
+| `PATCH`    | `/:expenseId`                            | Edit details of an expense.                             |
+| `DELETE`   | `/:expenseId`                            | Delete an expense.                                      |
+| `GET`      | `/group/:groupId`                        | View all expenses of a group.                           |
+| `GET`      | `/user/expense`                          | Retrieve all expenses of a user.                        |
+| `GET`      | `/user/recentexpense`                    | Retrieve the 5 most recent group expenses.              |
+| `GET`      | `/monthlyexpense/user`                   | Retrieve user expenses grouped by month.                |
+| `GET`      | `/categoryexpense/user`                  | Retrieve user expenses grouped by category.             |
+| `GET`      | `/dailyexpense/user`                     | Retrieve user expenses grouped daily.                   |
+| `GET`      | `/monthlyexpense/group/:groupId`         | Retrieve group expenses grouped by month.               |
+| `GET`      | `/dailyexpense/group/:groupId`           | Retrieve group expenses grouped daily.                  |
+| `GET`      | `/categoryexpense/group/:groupId`        | Retrieve group expenses grouped by category.            |
 
+---
 
+## 🧾 **Expense Group Routes**  
+**Base URL**: `https://server.splitbills.site/api/v1/expensegroup` (Protected Routes - Requires JWT Authentication)  
 
-### {protected routes}- This are routes that you need to login to access on login you will provided with a jwt access token which will be verified each time you try to access a protected route or it will throw a '401'- unauthorised error.
+| **Method** | **Route**                                 | **Description**                                          |
+|------------|-------------------------------------------|----------------------------------------------------------|
+| `GET`      | `/availableUsers`                        | Get a list of all available users in the database.      |
+| `POST`     | `/creategroup`                           | Create a new expense group.                             |
+| `GET`      | `/:groupId`                              | Retrieve details of a specific group.                   |
+| `PATCH`    | `/:groupId`                              | Edit group details (name and description only).         |
+| `DELETE`   | `/:groupId`                              | Delete a group.                                         |
+| `POST`     | `/group-settlements/:groupId`            | Get group balance sheet (simplified who-owes-whom).     |
+| `POST`     | `/makesettlement/:groupId`               | Settle balances in the group based on provided data.    |
+| `GET`      | `/`                                      | List all groups the user is a part of.                  |
+| `GET`      | `/settlements/user`                      | Get all settlements initiated by the user.              |
+| `GET`      | `/settlements/group/:groupId`            | Get all settlements in a group.                         |
+| `POST`     | `/group/:groupId/:userId`                | Add a member to an expense group.                       |
+
+---
+
+## 👤 **User Routes**  
+**Base URL**: `https://server.splitbills.site/api/v1/users`  
+
+| **Method** | **Route**                                 | **Description**                                          |
+|------------|-------------------------------------------|----------------------------------------------------------|
+| `POST`     | `/register`                              | Register a new user.                                    |
+| `POST`     | `/login`                                 | Log in a user and obtain a JWT access token.            |
+| `POST`     | `/logout`                                | Log out the currently authenticated user.               |
+| `GET`      | `/availableusers`                        | Get a list of all available users (Protected).          |
+| `POST`     | `/changepassword`                        | Change the password of the logged-in user (Protected).  |
+| `GET`      | `/getcurrentuser`                        | Retrieve details of the current logged-in user (Protected). |
+| `POST`     | `/changeuserdetails`                     | Update details of the logged-in user (Protected).       |
+
+---
+
+## 🔒 **Protected Routes**  
+All routes marked as **Protected** require the user to be authenticated.  
+- On successful login, a **JWT access token** will be issued.  
+- Pass the token in the request header for protected routes.  
+- Unauthorized access attempts will return a **401 - Unauthorized** error.  
+
+### **Example of Authorization Header**  
+```http
+Authorization: Bearer <your_access_token>
+```
+
+---
+
+### 💡 **How It Works**  
+This API simplifies expense tracking for groups and individuals by providing endpoints to:  
+- Add, edit, and view expenses (daily, monthly, or by category).  
+- Manage user groups and settlements.  
+- View user balances and expense histories.  
+
+---
+
+### 🌟 **Built For Developers**  
+This backend is tailored for developers who want to integrate expense management features into their frontend projects quickly and efficiently.  
+
+🔗 **Use the Hosted URL** and start building!  
+
+---  
+
+📚 **Happy Coding!** 🚀  
