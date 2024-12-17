@@ -1,6 +1,4 @@
-Here is a polished and professional version for your README file:
 
----
 
 # 💼 **Expense Split Backend API**  
 This is a fully hosted backend for the **Expense Split** application, designed for web developers to seamlessly integrate into their frontend projects.  
